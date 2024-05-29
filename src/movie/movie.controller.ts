@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/createMovie.dto';
 import { UpdateMovieDto } from './dto/updateMovie.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('movie')
 export class MovieController {
@@ -24,6 +26,9 @@ export class MovieController {
   }
 
   @UseGuards(AuthGuard)
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('all')
+  @CacheTTL(30)
   @Get()
   findAll() {
     return this.movieService.findAll();

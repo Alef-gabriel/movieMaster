@@ -17,9 +17,23 @@ services:
       - crud_network
     restart: unless-stopped
 
+  redis:
+    container_name: cache
+    image: redis
+    environment:
+      REDIS_USER: ${REDIS_USERNAME:-root}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-root}
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+    networks:
+      - crud_network
+
   nestjs:
     depends_on:
       - postgres
+      - redis
     build: ./
     image: nestjs:latest
     container_name: nestjs_container
@@ -41,4 +55,6 @@ networks:
 
 volumes:
   postgres:
+  redis:
+    driver: local
   #pgadmin:
